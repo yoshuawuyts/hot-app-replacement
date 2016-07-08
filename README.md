@@ -1,6 +1,16 @@
 hot-app-replacement [![npm version](https://badge.fury.io/js/hot-app-replacement.svg)](http://badge.fury.io/js/hot-app-replacement) [![Build Status](https://travis-ci.org/chinedufn/hot-app-replacement.svg?branch=master)](https://travis-ci.org/chinedufn/hot-app-replacement)
 ===============
 
+## choo hot reload notes
+Checkout, install deps and then `npm link` the following branch into the
+project so it can be picked up by `choo`:
+- https://github.com/yoshuawuyts/barracks/tree/hot-reload
+
+Then the app should be good to run. Opens on port `9999`. Whooop!
+
+---
+## original docs
+
 > Transfer state from old app to new app on save
 
 Had this lying around. Inspired to module-ify it by @yoshuawuyts's [tweet](https://twitter.com/yoshuawuyts/status/747800325508169728). Code cleanup incoming...

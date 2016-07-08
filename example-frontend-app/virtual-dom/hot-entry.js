@@ -1,26 +1,50 @@
-var LoopdagoApp = require('./app.js')
+const html = require('choo/html')
+const choo = require('choo')
 
-var hotReloadState = window.__hmr_state__
-var AppObject = LoopdagoApp(hotReloadState || {}, stateListener)
+const app = choo({ onStateChange: hmrSaveState })
 
-var AppElement = AppObject.element
-var kill = AppObject.kill
+app.router((route) => [ route('/', mainView) ])
 
-var appRoot = document.querySelector('#content')
+app.model({
+  state: { clicks: 0 },
+  reducers: {
+    increment (data, state) {
+      return { clicks: state.clicks + 1 }
+    }
+  }
+})
 
-if (window.__hmr_kill__) {
-  window.__hmr_kill__()
+// start
+const state = hmrStart()
+const tree = app.start({ state: state })
+document.body.appendChild(tree)
+
+// main view
+function mainView (state, prev, send) {
+  return html`
+    <main data-hmr-root="true">
+      <p>[ edit me on the server, watch me be edited ]</p>
+      <p>clicks: ${state.clicks}</p>
+      <button onclick=${() => send('increment')}>
+        increment + 1
+      </button>
+    </main>
+  `
 }
 
-window.__hmr_kill__ = kill
-appRoot.insertBefore(AppElement, appRoot.children[0])
+//
+// These are custom helper functions that should be split off into an npm pkg
+//
 
-// Only if we used server side rendering
-// TODO: Find a home for this
-if (appRoot.children[1]) {
-  appRoot.removeChild(appRoot.children[1])
+// start hot module reload
+function hmrStart () {
+  const appRoot = document.querySelector('[data-hmr-root="true"]')
+  if (appRoot) appRoot.parentNode.removeChild(appRoot)
+  console.log('reloaded!')
+  return window.__state || {}
 }
 
-function stateListener (state) {
-  window.__hmr_state__ = state
+// catch all state change and append to document
+function hmrSaveState (data, state, prev, caller, createSend) {
+  window.__state = state
 }
